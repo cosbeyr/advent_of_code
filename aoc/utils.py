@@ -1,6 +1,8 @@
 from datetime import datetime as dt
 import os
 from aocd import get_data
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 
 def get_date(year, day):
@@ -10,25 +12,37 @@ def get_date(year, day):
     path = os.path.join(path, f'{year}', f'{day}')
     return year, day, path 
 
+def get_example(year, day):
+    url = f"https://adventofcode.com/{year}/day/{day}"
+    html = urlopen(url).read()
+    soup = BeautifulSoup(html, 'html.parser')
+    example = soup.find("pre").get_text()
+    return example
 
-def build(year=None, day=None, return_data=False): 
+def build(year=None, day=None, return_data=True): 
     year, day, path = get_date(year, day)
     datapath = os.path.join(path, 'data.txt')
+    examplepath = os.path.join(path, 'example.txt')
 
     if os.path.exists(path):
         print(f'Reading data: {path}')
         if return_data:
             with open(datapath, 'r') as f:
                 data = f.read().splitlines()
-                return data
+            with open(examplepath, 'r') as f:
+                example = f.read().splitlines()
+            return data, example
         return 
 
     print(f'Building {year}/{day}: {path}')
     os.makedirs(path)
     data = get_data(year=year, day=day)
-    data = data.splitlines()
     with open(datapath, 'w') as f:
-        f.write('\n'.join(data))
+        f.write(data)
+
+    example = get_example(year, day)
+    with open(examplepath, 'w') as f:
+        f.write(example)
 
     solutionpath = os.path.join(path, 'solution.py')
     with open(solutionpath, 'w') as f:
@@ -36,7 +50,7 @@ def build(year=None, day=None, return_data=False):
         f.write(f'\ndef day{day}_2(data):\n    raise NotImplementedError\n')
 
     if return_data:
-        return data
+        return data.splitlines(), example.splitlines()
 
 
 def write_answer(answer, year=None, day=None):
