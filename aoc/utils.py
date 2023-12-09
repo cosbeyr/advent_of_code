@@ -26,8 +26,9 @@ def build(year=None, day=None, return_data=False):
     print(f'Building {year}/{day}: {path}')
     os.makedirs(path)
     data = get_data(year=year, day=day)
+    data = data.splitlines()
     with open(datapath, 'w') as f:
-        f.write(data)
+        f.write('\n'.join(data))
 
     solutionpath = os.path.join(path, 'solution.py')
     with open(solutionpath, 'w') as f:
