@@ -2,12 +2,17 @@ from datetime import datetime as dt
 import os
 from aocd import get_data
 
-def build(day=None, year=None, return_data=False): 
-    day = day if day is not None else dt.now().day
-    year = year if year is not None else dt.now().year
 
+def get_date(year, day):
+    year = year if year is not None else dt.now().year
+    day = day if day is not None else dt.now().day
     path = os.path.dirname(os.path.realpath(__file__))
     path = os.path.join(path, f'{year}', f'{day}')
+    return year, day, path 
+
+
+def build(year=None, day=None, return_data=False): 
+    year, day, path = get_date(year, day)
     datapath = os.path.join(path, 'data.txt')
 
     if os.path.exists(path):
@@ -20,13 +25,9 @@ def build(day=None, year=None, return_data=False):
 
     print(f'Building {year}/{day}: {path}')
     os.makedirs(path)
-    data = get_data(day=day, year=year)
+    data = get_data(year=year, day=day)
     with open(datapath, 'w') as f:
         f.write(data)
-
-    answerpath = os.path.join(path, 'answer.txt')
-    with open(answerpath, 'w') as f:
-        f.write(f'# {year} - Day {day}')
 
     solutionpath = os.path.join(path, 'solution.py')
     with open(solutionpath, 'w') as f:
@@ -37,6 +38,15 @@ def build(day=None, year=None, return_data=False):
         return data
 
 
-def write_solution(filepath, answer, part):
-    with open(filepath, 'a') as f:
-        f.write(f'### Part {part}: {answer}\n')
+def write_answer(answer, year=None, day=None):
+    year, day, path = get_date(year, day)
+    
+    assert os.path.exists(path), f'Error! Year / Day entered ({year} / {day}) do not exist'
+
+    answerpath = os.path.join(path, 'answer.txt')
+    if not os.path.exists(answerpath):
+        answer_str = '# {year} - Day {day}\n### Part 1: {answer}'
+    else:
+        answer_str = '### Part 2: {answer}'
+    with open(answerpath, 'a') as f:
+        f.write(answer_str)

@@ -1,1 +1,1 @@
-from .utils import build, write_solution
+from .utils import build, write_answer
