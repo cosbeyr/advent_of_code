@@ -55,16 +55,27 @@ def build(year=None, day=None, return_data=True):
 
 def write_answer(answer, year=None, day=None):
     year, day, path = get_date(year, day)
-    
     assert os.path.exists(path), f'Error! Year / Day entered ({year} / {day}) do not exist'
 
     answerpath = os.path.join(path, 'answer.txt')
+    answer_str = ''
+
     if not os.path.exists(answerpath):
         answer_str = f'# {year} - Day {day}\n### Part 1: {answer}'
-    else:
+        line_count = 0
+    else: 
+        with open(answerpath, 'r') as f:
+            line_count = sum(1 for _ in f)
+
+    if line_count == 2:    
         answer_str = f'\n### Part 2: {answer}'
-    with open(answerpath, 'a') as f:
-        f.write(answer_str)
+    
+    if answer_str != '':    
+        with open(answerpath, 'a') as f:
+            f.write(answer_str)
 
     with open(answerpath, 'r') as f:
         print(f.read())
+
+
+
