@@ -46,8 +46,11 @@ def write_answer(answer, year=None, day=None):
 
     answerpath = os.path.join(path, 'answer.txt')
     if not os.path.exists(answerpath):
-        answer_str = '# {year} - Day {day}\n### Part 1: {answer}'
+        answer_str = f'# {year} - Day {day}\n### Part 1: {answer}'
     else:
-        answer_str = '### Part 2: {answer}'
+        answer_str = f'\n### Part 2: {answer}'
     with open(answerpath, 'a') as f:
         f.write(answer_str)
+
+    with open(answerpath, 'r') as f:
+        print(f.read())
